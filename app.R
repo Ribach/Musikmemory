@@ -87,60 +87,62 @@ ui <- fluidPage(
     useShinyjs(),
     extendShinyjs(text = jsResetCode, functions = c("winprint")),
     
-    ##### Hauptmenü
-    div(id="hauptmenue",
-        fluidRow(
-          column(4, offset = 0.5,
-                 
-                 helpText("Musikmemory", style="font-size:90px; font-weight:bold; color:orange; margin-top:60px"),
-                 hr(style='margin-top:80px;'),
-                 actionLink("spiel_starten", "Spiel starten", style="font-size:40px; font-weight:bold; color:orange"),
-                 hr(),
-                 actionLink("statistiken", "Statistiken", style="font-size:40px; font-weight:bold; color:orange"),
-                 hr(),
-                 actionLink("spieler_verwalten_link", "Spieler verwalten", style="font-size:40px; font-weight:bold; color:orange"),
-                 hr()
-          ))),
-    
-    ##### Spielvorbereitung
-    hidden(div(id="spielvorbereitung",
-               fluidRow(
-                 column(3,
-                        div(id="spieleinstellungen_id", style="margin-top:30px;", uiOutput("spieleinstellungen"))
-                 ),
-                 column(7,
-                        div(id="spielerwahl_id", style="font-size:20px; margin-top:30px; color:white;", uiOutput("spielerwahl")),
-                        div(id="start_button_id", style="margin-left:200px; margin-top:200px;",
-                            actionButton("start_button", "Spiel starten", style="font-size:50px; font-weight:bold;"))
-                 )), style='width: 1800px;')),
-    
-    ##### Spielfeld
-    hidden(div(id="spielfeld",
-               fluidRow(
-                 column(10,
-                        fluidRow(uiOutput("aktiver_spieler")),
-                        fluidRow(uiOutput("memory_karten"))),
-                 column(2, uiOutput("spielstand"))),
-               style='width: 1800px;')),
-    
-    ##### Spielende
-    hidden(div(id="spielende", style="margin-left:50px;",
-               div(style="margin-top:50px; font-size:24px; color:green;", uiOutput("siegesmeldung")),
-               div(style="margin-top:20px", uiOutput("siegerpreis")),
-               div(style="margin-top:20px; color:white; font-size:16px;", uiOutput("siegerpreisspruch")),
-               div(style="margin-top:30px; color:white; font-size:16px; font-weight:bold;", uiOutput("spiele_siegerlied_id")),
-               div(style="margin-top:50px; color:white; font-size:16px; font-weight:bold;", uiOutput("zu_hauptmenue_3_id")))),
-    
-    ##### Spieler verwalten
-    hidden(div(id="spieler_verwalten",
-               uiOutput("neuer_spieler_eingabe"),
-               hidden(uiOutput("neuer_spieler_anzeige")),
-               uiOutput("spieler_bearbeiten"),
-               style='width: 1800px;')),
-    
-    ##### Hintergrundbild
-    setBackgroundImage(src='Hintergrund_Spiel.jpg')
-    
+    div(id="spiel",
+        ##### Hauptmenü
+        div(id="hauptmenue",
+            fluidRow(
+              column(4, offset = 0.5,
+                     
+                     helpText("Musikmemory", style="font-size:90px; font-weight:bold; color:orange; margin-top:60px"),
+                     hr(style='margin-top:80px;'),
+                     actionLink("spiel_starten", "Spiel starten", style="font-size:40px; font-weight:bold; color:orange"),
+                     hr(),
+                     actionLink("statistiken", "Statistiken", style="font-size:40px; font-weight:bold; color:orange"),
+                     hr(),
+                     actionLink("spieler_verwalten_link", "Spieler verwalten", style="font-size:40px; font-weight:bold; color:orange"),
+                     hr()
+              ))),
+        
+        ##### Spielvorbereitung
+        hidden(div(id="spielvorbereitung",
+                   fluidRow(
+                     column(3,
+                            div(id="spieleinstellungen_id", style="margin-top:30px;", uiOutput("spieleinstellungen"))
+                     ),
+                     column(7,
+                            div(id="spielerwahl_id", style="font-size:20px; margin-top:30px; color:white;", uiOutput("spielerwahl")),
+                            div(id="start_button_id", style="margin-left:200px; margin-top:200px;",
+                                actionButton("start_button", "Spiel starten", style="font-size:50px; font-weight:bold;"))
+                     )), style='width: 1800px;')),
+        
+        ##### Spielfeld
+        hidden(div(id="spielfeld",
+                   fluidRow(
+                     column(10,
+                            fluidRow(uiOutput("aktiver_spieler")),
+                            fluidRow(uiOutput("memory_karten"))),
+                     column(2, uiOutput("spielstand"))),
+                   style='width: 1800px;')),
+        
+        ##### Spielende
+        hidden(div(id="spielende", style="margin-left:50px;",
+                   div(style="margin-top:50px; font-size:24px; color:green;", uiOutput("siegesmeldung")),
+                   div(style="margin-top:20px", uiOutput("siegerpreis")),
+                   div(style="margin-top:20px; color:white; font-size:16px;", uiOutput("siegerpreisspruch")),
+                   div(style="margin-top:30px; color:white; font-size:16px; font-weight:bold;", uiOutput("spiele_siegerlied_id")),
+                   div(style="margin-top:50px; color:white; font-size:16px; font-weight:bold;", uiOutput("zu_hauptmenue_3_id")))),
+        
+        ##### Spieler verwalten
+        hidden(div(id="spieler_verwalten",
+                   uiOutput("neuer_spieler_eingabe"),
+                   hidden(uiOutput("neuer_spieler_anzeige")),
+                   uiOutput("spieler_bearbeiten"),
+                   style='width: 1800px;')),
+        
+        ##### Hintergrundbild
+        setBackgroundImage(src='Hintergrund_Spiel.jpg')
+        
+    )
   )
 )
 
@@ -455,6 +457,12 @@ server <- function(input, output, session) {
       
       datasets$karten_tabelle <- as.data.frame(cbind(paar, karte, lieder))
       
+      # Initialisiere das UI Element fürs Audio
+      insertUI(selector = "#spiel",
+               where = "afterBegin",
+               ui = tags$div(id="audio")
+      )
+      
     }else{
       show("fehler_genre")
     }
@@ -613,11 +621,19 @@ server <- function(input, output, session) {
     # k ist die Nummer der gerade gezogenen Karte
     k <- values$k
     
+    # Beende die Musik der vorherigen Karte, bevor die nächste Musik startet
+    removeUI(
+      selector = "#audio",
+      multiple = FALSE,
+      immediate = TRUE,
+      session = getDefaultReactiveDomain()
+    )
+    
     # Spiele das Lied zur Karte ab
     insertUI(selector = paste0("#k",k),
              where = "afterEnd",
-             ui = tags$audio(src = paste0("Musik/", as.character(datasets$karten_tabelle$lieder[datasets$karten_tabelle$karte == k])),
-                             type = "audio/mp3", autoplay = NA, controls = NA, style="display:none;")
+             ui = tags$div(id="audio", tags$audio(src = paste0("Musik/", as.character(datasets$karten_tabelle$lieder[datasets$karten_tabelle$karte == k])),
+                             type = "audio/mp3", autoplay = NA, controls = NA, style="display:none;"))
     )
     
     if(values$erste_karte == 0){
@@ -679,20 +695,16 @@ server <- function(input, output, session) {
     # Ermittle per Zufall den Siegerpreis
     values$preis <- as.character(sample(preise$Preise,1))
     
-    # Spiele die Siegermusik
+    # Ermittle das Siegerlied
     values$siegerlied_pfad <- spieler_infos_allgemein$Musikpfad[spieler_infos_allgemein$Displayname == sieger[1]]
-    file.copy(values$siegerlied_pfad,"C:/Users/Richard/Documents/Programmieren/R/Musikmemory/www/Siegerlieder", overwrite = TRUE)
-    # play(values$siegerlied_pfad)
-    
-    #liedpfad <- "C:/Users/Richard/Music/Neue Titel/Wind - Akeboshi.mp3"
-    # liedtitel <- strsplit(liedpfad,"\\/")
-    # liedtitel <- sapply(liedtitel, `[`, length(liedtitel[[1]]))
-    # tags$audio(src = paste0("Siegerlieder/", liedtitel),
-    #            type = "audio/mp3", autoplay = NA, controls = NA, style="display:none;")
     
     # Zeige die Siegesmeldung
     hide("spielfeld")
-    show("spielende")
+    show("spielende", 
+         anim = TRUE,
+         animType = "fade",
+         time = 5
+         )
   })
   
   ##### Zeige Siegermeldung an mit dem Namen des Gewinners / der Gewinner
@@ -749,23 +761,29 @@ server <- function(input, output, session) {
     
   })
   
-  ##### Spiele das Siegerlied
-  output$spiele_siegerlied_id <- renderUI({
-    
-    print("spiele Siegerlied")
-    
-    if(length(values$sieger) >= 1){
-      actionButton("spiele_siegerlied", "Spiele Siegerlied")
-    }
-    
-  })
-  
-  observeEvent(input$spiele_siegerlied, {
+  ##### Spiele Siegerlied
+  observeEvent(is.null(values$siegerlied_pfad), {
     
     print("observe spiele siegerlied")
     
-    play(values$siegerlied_pfad)
+    siegerlied_pfad = values$siegerlied_pfad
     
+
+    if(!identical(siegerlied_pfad, character(0))){
+      print(siegerlied_pfad)
+      
+      # Kopiere die Siegermusik
+      file.copy(siegerlied_pfad,"C:/Users/Richard/Documents/Programmieren/R/Musikmemory/www/Siegerlieder", overwrite = TRUE)
+      
+      liedname_vektor = strsplit(siegerlied_pfad, "/")[[1]]
+      liedname = liedname_vektor[length(liedname_vektor)]
+      print(liedname)
+      insertUI(selector = "#spielende",
+               where = "afterEnd",
+               ui = tags$div(id="audio", tags$audio(src = paste0("Siegerlieder/", liedname),
+                                                    type = "audio/mp3", autoplay = NA, controls = NA, style="display:none;"))
+      )
+    }
   })
   
   ##### Zurück zum Hauptmenü
@@ -783,7 +801,7 @@ server <- function(input, output, session) {
     
     print("observe zu Hauptmenü 3")
     
-    js$reset()
+    reset("spiel")
     
   })
   

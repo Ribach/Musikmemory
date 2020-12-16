@@ -2,3 +2,5 @@
 .Rproj.user/
 tables
 www
+.RData
+.Rhistory
