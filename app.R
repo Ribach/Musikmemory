@@ -55,7 +55,7 @@ spielerbilder[] <- lapply(spielerbilder, as.character)
 
 ##### Vektor mit Musikgenres
 musikgenres <- sort(c("Filmmusik","Classic Rock","Indie (Rock)","Instrumentalstücke","Klassische Musik",
-                      "Die 60er & 70er","Punk Rock & Alternative","Oldies & Schlager"))
+                      "Die 60er & 70er","Punk Rock & Alternative","Oldies & Schlager", "Anime"))
 
 ##### Vektoren mit Liednamen
 Filmmusik <- paste0("Filmmusik/", list.files("C:/Users/Richard/Documents/Programmieren/R/Musikmemory/www/Musik/Filmmusik"))
@@ -66,6 +66,7 @@ Klassische_Musik <- paste0("Klassische_Musik/", list.files("C:/Users/Richard/Doc
 Punk_Rock_und_Alternative <- paste0("Punk_Rock_und_Alternative/", list.files("C:/Users/Richard/Documents/Programmieren/R/Musikmemory/www/Musik/Punk_Rock_und_Alternative"))
 Oldies_und_Schlager <- paste0("Oldies_und_Schlager/", list.files("C:/Users/Richard/Documents/Programmieren/R/Musikmemory/www/Musik/Oldies_und_Schlager"))
 Classic_Rock <- paste0("Classic_Rock/", list.files("C:/Users/Richard/Documents/Programmieren/R/Musikmemory/www/Musik/Classic_Rock"))
+Anime_openings_endings <- paste0("Anime_openings_endings/", list.files("C:/Users/Richard/Documents/Programmieren/R/Musikmemory/www/Musik/Anime_openings_endings"))
 
 ##### Liste mit Preisen
 preise <- list.files("C:/Users/Richard/Documents/Programmieren/R/Musikmemory/www/Preise")
@@ -451,6 +452,9 @@ server <- function(input, output, session) {
       # if("Oldies & Schlager" %in% input$musikgenre_waehlen){
       #   lied_auswahl <- c(lied_auswahl, Oldies_und_Schlager)
       # }
+      if("Anime" %in% input$musikgenre_waehlen){
+        lied_auswahl <- c(lied_auswahl, Anime_openings_endings)
+      }
       
       anzahl_lieder <- length(lied_auswahl)
       lieder <- lied_auswahl[sample(anzahl_lieder,anzahl_paare)]
@@ -770,14 +774,12 @@ server <- function(input, output, session) {
     
 
     if(!identical(siegerlied_pfad, character(0))){
-      print(siegerlied_pfad)
-      
+
       # Kopiere die Siegermusik
       file.copy(siegerlied_pfad,"C:/Users/Richard/Documents/Programmieren/R/Musikmemory/www/Siegerlieder", overwrite = TRUE)
       
       liedname_vektor = strsplit(siegerlied_pfad, "/")[[1]]
       liedname = liedname_vektor[length(liedname_vektor)]
-      print(liedname)
       insertUI(selector = "#spielende",
                where = "afterEnd",
                ui = tags$div(id="audio", tags$audio(src = paste0("Siegerlieder/", liedname),
